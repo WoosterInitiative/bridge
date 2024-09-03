@@ -223,9 +223,12 @@ class DjangoHandler(FrameWorkHandler):
 
 def configure(settings_locals: dict[Any, Any]) -> None:
     project_name = os.path.basename(settings_locals["BASE_DIR"])
+    bridge_config = get_config()
+    log_info(f"Bridge Config: {bridge_config}")
     handler = DjangoHandler(
         project_name=project_name,
         framework_locals=settings_locals,
-        bridge_config=get_config(),
+        bridge_config=bridge_config,
     )
+    log_info(f"DjangoHandler postgres_config: {handler.postgres_config}")
     handler.run()

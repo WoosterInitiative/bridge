@@ -1,6 +1,6 @@
 import argparse
 
-from bridge.cli.db import open_database_shell
+from bridge.cli.db import dump_database, open_database_shell
 from bridge.cli.init import initialize
 from bridge.cli.redis import open_redis_shell
 from bridge.cli.stop import stop
@@ -37,6 +37,7 @@ def main():
     db_parser = subparsers.add_parser("db", help="Interact with the database")
     db_subparsers = db_parser.add_subparsers(dest="db_command")
     db_subparsers.add_parser("shell", help="Open a database shell (psql)")
+    db_subparsers.add_parser("dumpall", help="Dump the entire database")
 
     # Parser for redis
     redis_parser = subparsers.add_parser("redis", help="Interact with Redis")
@@ -59,6 +60,8 @@ def main():
     elif args.command == "db":
         if args.db_command == "shell":
             open_database_shell()
+        if args.db_command == "dumpall":
+            dump_database()
         else:
             db_parser.print_help()
     elif args.command == "redis":

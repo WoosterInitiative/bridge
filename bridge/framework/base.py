@@ -6,8 +6,9 @@ from typing import Any
 import docker  # type: ignore[import-untyped]
 
 from bridge.config import BridgeConfig
+from bridge.console import log_info
 from bridge.platform import Platform, detect_platform
-from bridge.service.postgres import PostgresService
+from bridge.service.postgres import PostgresConfig, PostgresService
 from bridge.service.redis import RedisService
 
 
@@ -30,6 +31,8 @@ class FrameWorkHandler(ABC):
         self.framework_locals = framework_locals
         self.enable_postgres = bridge_config.enable_postgres
         self.enable_worker = bridge_config.enable_worker
+        log_info(f"postgres_image: {bridge_config.postgres_image}")
+        self.postgres_config = PostgresConfig(image=bridge_config.postgres_image)
 
     def is_remote(self) -> bool:
         """
@@ -58,14 +61,19 @@ class FrameWorkHandler(ABC):
         """Start local services if necessary"""
         client = docker.from_env()
         if self.enable_postgres:
-            self.start_local_postgres(client)
+            log_info(self.postgres_config)
+            self.start_local_postgres(client, postgres_config=self.postgres_config)
         if self.enable_worker:
             self.start_local_redis(client)
             self.start_local_worker()
             self.start_local_flower()
 
-    def start_local_postgres(self, client: docker.DockerClient) -> None:
-        service = PostgresService(client=client)
+    def start_local_postgres(
+        self,
+        client: docker.DockerClient,
+        postgres_config: "PostgresConfig | None" = None,
+    ) -> None:
+        service = PostgresService(client=client, config=postgres_config)
         service.start()
 
     def start_local_redis(self, client: docker.DockerClient) -> None:

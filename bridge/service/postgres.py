@@ -106,3 +106,19 @@ class PostgresService(DockerService[PostgresConfig]):
                 self.config.environment.POSTGRES_PORT,
             ],
         )
+
+    def dumpall(self):
+        # Dump the entire database
+        # NOTE: This entirely replaces the currently running process!
+        os.execvp(
+            "docker",
+            [
+                "docker",
+                "exec",
+                "-it",
+                self.config.name,
+                "pg_dumpall",
+                "-U",
+                self.config.environment.POSTGRES_USER,
+            ],
+        )

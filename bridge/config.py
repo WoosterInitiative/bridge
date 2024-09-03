@@ -13,6 +13,7 @@ from bridge.console import log_warning
 class BridgeConfig(BaseModel):
     enable_postgres: bool = True
     enable_worker: bool = True
+    postgres_image: str = "postgres:12"
 
     def to_yaml(self) -> str:
         return dump(self.model_dump(), Dumper=Dumper)
