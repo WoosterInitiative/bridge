@@ -1,11 +1,13 @@
 import builtins
 from pathlib import Path
+from typing import TYPE_CHECKING, cast
 
 import pytest
 
-from bridge.config import BridgeConfig
-from bridge.framework.django import DjangoHandler
 from bridge.platform import Platform
+
+if TYPE_CHECKING:
+    from bridge.framework.django import DjangoHandler
 
 
 @pytest.fixture
@@ -25,33 +27,6 @@ def render_env(mocker):
     )
 
 
-@pytest.fixture
-def django_settings():
-    return {
-        "ALLOWED_HOSTS": ["localhost"],
-        "DATABASES": {
-            "default": {
-                "ENGINE": "django.db.backends.sqlite3",
-                "NAME": "db.sqlite3",
-            }
-        },
-        "STATIC_URL": "/static/",
-        "BASE_DIR": "test",
-        "DEBUG": True,
-        "SECRET_KEY": "secret",
-    }
-
-
-@pytest.fixture
-def django_handler(django_settings):
-    bridge_config = BridgeConfig()
-    return DjangoHandler(
-        project_name="test",
-        framework_locals=django_settings,
-        bridge_config=bridge_config,
-    )
-
-
 def was_module_imported(import_mock, module_name):
     """Check if the specified module was attempted to be imported."""
     return any(
@@ -59,7 +34,7 @@ def was_module_imported(import_mock, module_name):
     )
 
 
-def test_configure_postgres(render_env, django_handler):
+def test_configure_postgres(render_env, django_handler: "DjangoHandler"):
     django_handler.configure_postgres(platform=Platform.RENDER)
     assert django_handler.framework_locals["DATABASES"] == {
         "default": {
@@ -73,7 +48,7 @@ def test_configure_postgres(render_env, django_handler):
     }
 
 
-def test_configure_worker(mocker, render_env, django_handler):
+def test_configure_worker(mocker, render_env, django_handler: "DjangoHandler"):
     mocked_django_celery_module = mocker.MagicMock()
     mocker.patch.dict(
         "sys.modules", {"bridge.service.django_celery": mocked_django_celery_module}
@@ -93,7 +68,7 @@ def test_configure_worker(mocker, render_env, django_handler):
     )
 
 
-def test_configure_allowed_hosts(render_env, django_handler):
+def test_configure_allowed_hosts(render_env, django_handler: "DjangoHandler"):
     django_handler.configure_allowed_hosts(platform=Platform.RENDER)
     assert set(django_handler.framework_locals["ALLOWED_HOSTS"]) == {
         ".onrender.com",
@@ -101,20 +76,20 @@ def test_configure_allowed_hosts(render_env, django_handler):
     }
 
 
-def test_configure_debug(render_env, django_handler):
+def test_configure_debug(render_env, django_handler: "DjangoHandler"):
     django_handler.configure_debug(platform=Platform.RENDER)
     assert django_handler.framework_locals["DEBUG"] is False
 
 
-def test_configure_secret_key(render_env, django_handler):
+def test_configure_secret_key(render_env, django_handler: "DjangoHandler"):
     django_handler.configure_secret_key(platform=Platform.RENDER)
     assert django_handler.framework_locals["SECRET_KEY"] == "fakesecret"
 
 
-def test_configure_staticfiles(django_handler):
+def test_configure_staticfiles(django_handler: "DjangoHandler"):
     django_handler.configure_staticfiles(platform=Platform.RENDER)
     assert django_handler.framework_locals.get("STATIC_URL") == "/static/"
-    assert Path(django_handler.framework_locals.get("STATIC_ROOT")) == Path(
+    assert Path(cast(str, django_handler.framework_locals.get("STATIC_ROOT"))) == Path(
         "test/staticfiles"
     )
     assert (
@@ -127,7 +102,7 @@ def test_configure_staticfiles(django_handler):
     )
 
 
-def test_configure_services(mocker, django_handler):
+def test_configure_services(mocker, django_handler: "DjangoHandler"):
     mocked_configure_postgres = mocker.patch.object(
         django_handler, "configure_postgres", new=mocker.MagicMock()
     )
