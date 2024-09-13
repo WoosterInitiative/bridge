@@ -55,6 +55,9 @@ class PostgresConfig(ContainerConfig[PostgresEnvironment]):
     )
     environment: PostgresEnvironment = Field(default_factory=PostgresEnvironment)
 
+    def __str__(self) -> str:
+        return f"PostgresConfig(image={self.image!r}, name={self.name!r})"
+
 
 class PostgresService(DockerService[PostgresConfig]):
     def __init__(

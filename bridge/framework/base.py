@@ -61,7 +61,7 @@ class FrameWorkHandler(ABC):
         """Start local services if necessary"""
         client = docker.from_env()
         if self.enable_postgres:
-            log_info(self.postgres_config)
+            log_info(str(self.postgres_config))
             self.start_local_postgres(client, postgres_config=self.postgres_config)
         if self.enable_worker:
             self.start_local_redis(client)

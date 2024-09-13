@@ -16,6 +16,10 @@ Bridge is designed to be modular. You can configure only the services you need b
 ### How can I stop the services that bridge spins up?
 `bridge stop` will stop all running services.
 
+### How can I specify an image (version) for Postgres?
+
+If you need a specific version or tag for the postgres database you can specify `postgres_image: <tag>`. The default[^imagedate] is `postgres_image: 12`.
+
 
 ### How can I access the database directly?
 Locally, bridge provides access to a psql shell through `bridge db shell`. Remotely, [Render has instructions for connecting](https://docs.render.com/databases#connecting-with-the-external-url). 
@@ -25,3 +29,5 @@ Bridge provides access to redis-cli through `bridge redis shell`. Remotely, [Ren
 
 ### How can I access Celery?
 Flower is a web interface into all the information you need to debug and work with Celery. By default, bridge will run Flower on [http://localhost:5555](http://localhost:5555).
+
+[^imagedate]: As of 9/13/2024
