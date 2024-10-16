@@ -1,3 +1,9 @@
+## 0.2.0b0 (2024-10-16)
+
+### Feat
+
+- **postgres**: version and image tag added as config options
+
 ## 0.1.3b1 (2024-09-03)
 
 ### Fix
