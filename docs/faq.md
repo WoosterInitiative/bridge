@@ -18,8 +18,11 @@ Bridge is designed to be modular. You can configure only the services you need b
 
 ### How can I specify an image (version) for Postgres?
 
-If you need a specific version or tag for the postgres database you can specify `postgres_image: <tag>`. The default[^imagedate] is `postgres_image: 12`.
+If you need a specific version or tag for the postgres database you can specify `postgres_image: <image>:<tag>`. The default[^imagedate] is `postgres_image: "postgres:12"`.
 
+### How can I specify a name for the postgres container?
+
+If you need to provide a custom name for the databae container, such as when you're developing multiple projects on the same computer, you can add `postgres_name: <name>`. The default is `postgres_name: bridge_postgres`.
 
 ### How can I access the database directly?
 Locally, bridge provides access to a psql shell through `bridge db shell`. Remotely, [Render has instructions for connecting](https://docs.render.com/databases#connecting-with-the-external-url). 

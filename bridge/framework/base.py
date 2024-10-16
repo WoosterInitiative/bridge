@@ -32,7 +32,9 @@ class FrameWorkHandler(ABC):
         self.enable_postgres = bridge_config.enable_postgres
         self.enable_worker = bridge_config.enable_worker
         log_info(f"postgres_image: {bridge_config.postgres_image}")
-        self.postgres_config = PostgresConfig(image=bridge_config.postgres_image)
+        self.postgres_config = PostgresConfig(
+            image=bridge_config.postgres_image, name=bridge_config.postgres_name
+        )
 
     def is_remote(self) -> bool:
         """
